@@ -22,8 +22,8 @@ router.get('/', function (req, res) {
   });
 });
 
-router.get('/index/nswbmw',function(req,res){
-  res.send('hello.world!');
+router.get('/guo',function(req,res){
+  res.send('hello.guo!');
 });
 
 /*login get*/
