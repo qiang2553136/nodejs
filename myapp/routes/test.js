@@ -3,7 +3,9 @@ var router = express.Router();
 
 /* GET test listing. */
 router.get('/', function(req, res, next) {
-  res.send('test');
+  // res.send('respond with a resource guo');
+  return res.render('testboot');
+
 });
 
 module.exports = router;

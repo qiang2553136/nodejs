@@ -22,8 +22,8 @@ router.get('/', function (req, res) {
   });
 });
 
-router.get('/guo',function(req,res){
-  res.send('hello.guo!');
+router.get('/index/nswbmw',function(req,res){
+  res.send('hello.world!');
 });
 
 /*login get*/
@@ -131,6 +131,7 @@ router.get('/post', function (req, res) {
     success: req.flash('success').toString(),
     error: req.flash('error').toString()
   });
+
 });
 
 router.post('/post', checkLogin);
@@ -143,7 +144,7 @@ router.post('/post', function (req, res) {
       return res.redirect('/');
     }
     req.flash('success', '发布成功!');
-    res.redirect('/');//发表成功跳转到主页
+    return res.redirect('/');//发表成功跳转到主页
   });
 });
 //文件上传
@@ -160,16 +161,16 @@ router.get('/upload', function (req, res) {
 router.post('/upload', checkLogin);
 router.post('/upload', function (req, res) {
   req.flash('success', '文件上传成功!');
-  res.redirect('/upload');
+  return res.redirect('/upload');
 });
 
 
 function checkLogin(req, res, next) {
     if (!req.session.user) {
       req.flash('error', '未登录!');
-      res.redirect('/login');
+      return res.redirect('/login');
     }
-    next();w
+    next();
   }
 
   function checkNotLogin(req, res, next) {
