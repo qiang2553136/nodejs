@@ -4,6 +4,8 @@ var router = express.Router();
 var crypto = require('crypto');
 var User = require('../models/user.js');
 var Post = require('../models/post.js');
+var userDao = require('../dao/userDao.js');
+
 
 
 /* GET home page. */
@@ -57,6 +59,7 @@ router.post('/login', function (req, res) {
     req.flash('success', '登陆成功!');
     res.redirect('/');//登陆成功后跳转到主页
   });
+
 });
 
 /*logout*/
@@ -97,9 +100,7 @@ router.post('/reg', function (req, res) {
       email: req.body.email
   });
   //检查用户名是否已经存在
-    console.log('guo');
   User.get(newUser.name, function (err, user) {
-      console.log('ok++++');
     if (err) {
       req.flash('error', err);
       return res.redirect('/');
@@ -109,7 +110,7 @@ router.post('/reg', function (req, res) {
       req.flash('error', '用户已存在!');
       return res.redirect('/reg');//返回注册页
     }
-      console.log('ok----');
+
     //如果不存在则新增用户
     newUser.save(function (err, user) {
       if (err) {

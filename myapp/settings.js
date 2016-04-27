@@ -1,6 +1,6 @@
 module.exports = {
   cookieSecret: 'guo',
-  db: 'guo',
-  host: 'localhost',
-  port: 27017
+  db: 'root',
+  host: '192.168.31.122',
+  port: 3306
 };
