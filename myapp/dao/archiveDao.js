@@ -2,15 +2,14 @@
 // 实现与MySQL交互
 var mysql = require('mysql');
 var $conf = require('../conf/db.js');
-var $sql = require('./userSqlMapping');
+var $sql = require('./archiveSqlMapping.js');
 
 // 使用连接池，提升性能
 var pool  = mysql.createPool($conf.mysql);
 
-function User(user) {
-  this.name = user.name;
-  this.password = user.Phone_number;
-  this.email = user.email;
+function Archive(archive) {
+  this.title = archive.archive_title;
+  this.author = archive.archive_author;
 };
 
 
@@ -26,7 +25,7 @@ var jsonWrite = function (res, ret) {
   }
 };
 
-module.exports = User;
+module.exports = Archive;
 
   // add: function (req, res, next) {
   //   pool.getConnection(function(err, connection) {
@@ -96,20 +95,21 @@ module.exports = User;
   //   });
   //
   // },
-  User.queryByName = function (Phone_number, callback) {
+  Archive.queryById = function (res,id, callback) {
      // 为了拼凑正确的sql语句，这里要转下整数
 
      pool.getConnection(function(err, connection) {
        if (err) {
          return callback(err);//错误，返回 err 信息
        }
-       
-       connection.query($sql.queryById, Phone_number, function(err, result) {
+       connection.query($sql.queryAll, id, function(err, result) {
+
          if (err) {
                    return callback(err);//失败！返回 err 信息
                  }
 
-        callback(null, result[0]);
+
+        callback(null, result);
         // jsonWrite(res, result[0]);
         connection.release();
 

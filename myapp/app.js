@@ -5,18 +5,18 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var routes = require('./routes/index');
+
 var users = require('./routes/users');
 
 var flash = require('connect-flash');
 var session = require('express-session');
-var MongoStore = require('connect-mongo')(session);
 var settings = require('./settings');
 var multer  = require('multer');
 
+
 var app = express();
 
- 
+
 var nodeadmin = require('nodeadmin');
 app.use(nodeadmin(app));
 
@@ -35,14 +35,10 @@ app.use(multer({
 app.use(session({
   secret: settings.cookieSecret,
   key: settings.db,//cookie name
-  cookie: {maxAge: 1000 * 60 * 60 * 24 * 30},//30 days
-  store: new MongoStore({
-    /*db: settings.db,
-    host: settings.host,
-    port: settings.port*/
-     url: 'mongodb://localhost/guo'
-  })
+  cookie: {maxAge: 1000 * 60 * 60 * 24 * 30}//30 days
+
 }));
+
 
 
 app.use(flash());
@@ -55,7 +51,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', routes);
+
 app.use('/users', users);
 
 
