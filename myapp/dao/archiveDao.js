@@ -10,6 +10,7 @@ var pool  = mysql.createPool($conf.mysql);
 function Archive(archive) {
   this.title = archive.archive_title;
   this.author = archive.archive_author;
+  this.archive_pubtime = archive.archive_pubtime;
 };
 
 
@@ -107,10 +108,24 @@ module.exports = Archive;
          if (err) {
                    return callback(err);//失败！返回 err 信息
                  }
+                 //查出数据转时间换为 2016-01-10 19:19:31格式
+                 for (var i = 0; i < result.length; i++) {
+                   var temp =result[i].archive_pubtime;
+                   var date = new Date( temp * 1000 );//.转换成毫秒
+                   var time = date.getFullYear() + "-" + (date.getMonth() < 10 ? '0' + (date.getMonth()+1) : (date.getMonth()+1))
+                   + "-" + (date.getDate() < 10 ? '0' + date.getDate() : date.getDate())
+                   + " " + (date.getHours())
+                   + ":" + (date.getMinutes())
+                   + ":" + (date.getSeconds());
+                  //  console.log(result[1].archive_pubtime);
 
+                   result[i].archive_pubtime = time;
+                 }
+
+            // console.log(result.archive_pubtime);
 
         callback(null, result);
-        // jsonWrite(res, result[0]);
+        // jsonWrite(res, result[1]);
         connection.release();
 
       });

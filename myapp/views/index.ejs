@@ -2,9 +2,9 @@
 <% posts.forEach(function (post, index) { %>
   <p><h2><a href="#"><%= post.archive_title %></a></h2></p>
   <p class="info">
-    作者：<a href="#"><%= post.name %></a> |
-    日期：<%= post.time %>
+    作者：<a href="#"><%= post.archive_author %></a> |
+    日期：<%= post.archive_pubtime %>
   </p>
-  <p><%- post.post %></p>
+  <p><%- post.archive_content %></p>
 <% }) %>
 <%- include footer %>
