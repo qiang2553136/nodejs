@@ -28,29 +28,34 @@ var jsonWrite = function (res, ret) {
 
 module.exports = User;
 
-  // add: function (req, res, next) {
-  //   pool.getConnection(function(err, connection) {
-  //     // 获取前台页面传过来的参数
-  //     var param = req.query || req.params;
-  //
-  //     // 建立连接，向表中插入值
-  //     // 'INSERT INTO user(id, name, age) VALUES(0,?,?)',
-  //     connection.query($sql.insert, [param.name, param.age], function(err, result) {
-  //       if(result) {
-  //         result = {
-  //           code: 200,
-  //           msg:'增加成功'
-  //         };
-  //       }
-  //
-  //       // 以json形式，把操作结果返回给前台页面
-  //       jsonWrite(res, result);
-  //
-  //       // 释放连接
-  //       connection.release();
-  //     });
-  //   });
-  // },
+    User.prototype.save =  function (req, res, next) {
+    pool.getConnection(function(err, connection) {
+      // 获取前台页面传过来的参数
+
+      var user = {
+      name: this.name,
+      password: this.password
+
+    };
+
+      // 建立连接，向表中插入值
+      // 'INSERT INTO user(id, name, age) VALUES(0,?,?)',
+      connection.query($sql.insert, user, function(err, result) {
+        if(result) {
+          result = {
+            code: 200,
+            msg:'增加成功'
+          };
+        }
+
+        // 以json形式，把操作结果返回给前台页面
+        callback(null, result[0]);
+
+        // 释放连接
+        connection.release();
+      });
+    });
+  };
   // delete: function (req, res, next) {
   //   // delete by Id
   //   pool.getConnection(function(err, connection) {
@@ -103,7 +108,7 @@ module.exports = User;
        if (err) {
          return callback(err);//错误，返回 err 信息
        }
-       
+
        connection.query($sql.queryById, Phone_number, function(err, result) {
          if (err) {
                    return callback(err);//失败！返回 err 信息

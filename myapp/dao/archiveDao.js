@@ -103,7 +103,7 @@ module.exports = Archive;
        if (err) {
          return callback(err);//错误，返回 err 信息
        }
-       connection.query($sql.queryAll, id, function(err, result) {
+       connection.query($sql.queryById, id, function(err, result) {
 
          if (err) {
                    return callback(err);//失败！返回 err 信息
@@ -122,7 +122,7 @@ module.exports = Archive;
                    result[i].archive_pubtime = time;
                  }
 
-            // console.log(result.archive_pubtime);
+            console.log(result);
 
         callback(null, result);
         // jsonWrite(res, result[1]);
@@ -133,11 +133,40 @@ module.exports = Archive;
     });
 
   };
-  // queryAll: function (req, res, next) {
-  //   pool.getConnection(function(err, connection) {
-  //     connection.query($sql.queryAll, function(err, result) {
-  //       jsonWrite(res, result);
-  //       connection.release();
-  //     });
-  //   });
-  // }
+  Archive.queryAll = function (res, callback) {
+     // 为了拼凑正确的sql语句，这里要转下整数
+
+     pool.getConnection(function(err, connection) {
+       if (err) {
+         return callback(err);//错误，返回 err 信息
+       }
+       connection.query($sql.queryAll, function(err, result) {
+
+         if (err) {
+                   return callback(err);//失败！返回 err 信息
+                 }
+                 //查出数据转时间换为 2016-01-10 19:19:31格式
+                 for (var i = 0; i < result.length; i++) {
+                   var temp =result[i].archive_pubtime;
+                   var date = new Date( temp * 1000 );//.转换成毫秒
+                   var time = date.getFullYear() + "-" + (date.getMonth() < 10 ? '0' + (date.getMonth()+1) : (date.getMonth()+1))
+                   + "-" + (date.getDate() < 10 ? '0' + date.getDate() : date.getDate())
+                   + " " + (date.getHours())
+                   + ":" + (date.getMinutes())
+                   + ":" + (date.getSeconds());
+                  //  console.log(result[1].archive_pubtime);
+
+                   result[i].archive_pubtime = time;
+                 }
+
+            // console.log(result);
+
+        callback(null, result);
+        // jsonWrite(res, result[1]);
+        connection.release();
+
+      });
+
+    });
+
+  };
