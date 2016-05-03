@@ -9,8 +9,8 @@ var pool  = mysql.createPool($conf.mysql);
 
 function User(user) {
   this.name = user.name;
-  this.password = user.Phone_number;
-  this.email = user.email;
+  this.password = user.password;
+  this.phoneNumber = user.phoneNumber;
 };
 
 
@@ -28,28 +28,20 @@ var jsonWrite = function (res, ret) {
 
 module.exports = User;
 
-    User.prototype.save =  function (req, res, next) {
+User.save =  function (user,callback) {
     pool.getConnection(function(err, connection) {
-      // 获取前台页面传过来的参数
-
-      var user = {
-      name: this.name,
-      password: this.password
-
-    };
 
       // 建立连接，向表中插入值
-      // 'INSERT INTO user(id, name, age) VALUES(0,?,?)',
-      connection.query($sql.insert, user, function(err, result) {
+      // 'INSERT INTO ff_users(Username, Phone_number,Password) VALUES(?,?,?)',
+      connection.query($sql.insert, [user.name,user.phoneNumber,user.password], function(err, result) {
         if(result) {
           result = {
             code: 200,
             msg:'增加成功'
           };
         }
-
         // 以json形式，把操作结果返回给前台页面
-        callback(null, result[0]);
+        callback(null, result);
 
         // 释放连接
         connection.release();

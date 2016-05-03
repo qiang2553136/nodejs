@@ -32,8 +32,7 @@ router.get('/login', function (req, res) {
         user: req.session.user,
         success: req.flash('success').toString(),
         error: req.flash('error').toString()});
-})
-;
+});
 /*login post*/
 // router.post('/login', checkNotLogin);
 router.post('/login', function (req, res) {

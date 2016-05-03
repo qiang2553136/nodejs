@@ -17,6 +17,7 @@ router.get('/logout', function (req, res) {
   res.redirect('/');//登出成功后跳转到主页
 });
 
+
 router.get('/', function(req, res, next) {
   archiveDao.queryAll(res,function (err, archive) {
 
@@ -129,13 +130,14 @@ router.post('/reg', function (req, res) {
   //生成密码的 md5 值
   var md5 = crypto.createHash('md5'),
       password = md5.update(req.body.password).digest('hex');
-  var newUser = new User({
+  var newUser = new userDao({
       name: name,
       password: password,
-      email: req.body.email
+      phoneNumber: req.body.Phone_number
   });
+
   //检查用户名是否已经存在
-  User.queryByName(newUser.name, function (err, user) {
+  userDao.queryByName(req.body.Phone_number, function (err, user) {
     if (err) {
       req.flash('error', err);
       return res.redirect('/');
@@ -147,7 +149,7 @@ router.post('/reg', function (req, res) {
     }
 
     //如果不存在则新增用户
-    newUser.save(function (err, user) {
+    userDao.save(newUser,function (err, user) {
       if (err) {
         req.flash('error', err);
         return res.redirect('/reg');//注册失败返回主册页

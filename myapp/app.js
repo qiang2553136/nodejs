@@ -17,9 +17,6 @@ var multer  = require('multer');
 var app = express();
 
 
-var nodeadmin = require('nodeadmin');
-app.use(nodeadmin(app));
-
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
