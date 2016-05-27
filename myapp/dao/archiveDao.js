@@ -101,6 +101,7 @@ module.exports = Archive;
 
      pool.getConnection(function(err, connection) {
        if (err) {
+      
          return callback(err);//错误，返回 err 信息
        }
        connection.query($sql.queryById, id, function(err, result) {
@@ -122,8 +123,6 @@ module.exports = Archive;
                    result[i].archive_pubtime = time;
                  }
 
-            console.log(result);
-
         callback(null, result);
         // jsonWrite(res, result[1]);
         connection.release();
@@ -143,6 +142,7 @@ module.exports = Archive;
        connection.query($sql.queryAll, function(err, result) {
 
          if (err) {
+                  // console.log("数据库出现错误,代码:"+err.code);
                    return callback(err);//失败！返回 err 信息
                  }
                  //查出数据转时间换为 2016-01-10 19:19:31格式

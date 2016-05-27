@@ -34,6 +34,12 @@ User.save =  function (user,callback) {
       // 建立连接，向表中插入值
       // 'INSERT INTO ff_users(Username, Phone_number,Password) VALUES(?,?,?)',
       connection.query($sql.insert, [user.name,user.phoneNumber,user.password], function(err, result) {
+
+          if (err) {
+        
+            return callback(err);//错误，返回 err 信息
+          }
+
         if(result) {
           result = {
             code: 200,
@@ -98,8 +104,10 @@ User.save =  function (user,callback) {
 
      pool.getConnection(function(err, connection) {
        if (err) {
+
          return callback(err);//错误，返回 err 信息
        }
+
 
        connection.query($sql.queryById, Phone_number, function(err, result) {
          if (err) {

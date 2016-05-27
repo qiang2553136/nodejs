@@ -10,21 +10,27 @@ router.get('/addUser', function(req, res, next) {
 });
 
 /*logout*/
-// router.get('/logout', checkLogin);
+router.get('/logout', checkLogin);
 router.get('/logout', function (req, res) {
   req.session.user = null;
   req.flash('success', '登出成功!');
   res.redirect('/');//登出成功后跳转到主页
 });
 
-
 router.get('/', function(req, res, next) {
+
   archiveDao.queryAll(res,function (err, archive) {
+
+    if(err){
+      console.log(err);
+      return res.send('<p>'+err+'</p>');;
+    }
 
     if (!archive) {
       req.flash('error', '用户不存在!');
       return res.redirect('/login');//用户不存在则跳转到登录页
     }
+
 
     res.render('index', {
       title: '主页',
@@ -35,6 +41,7 @@ router.get('/', function(req, res, next) {
     });
 
   });
+
 
 });
 
@@ -63,31 +70,36 @@ router.get('/deleteUser', function(req, res, next) {
   userDao.delete(req, res, next);
 });
 
-router.post('/updateUser', function(req, res, next) {
+router.get('/test', function(req, res, next) {
   userDao.update(req, res, next);
 });
 
 
 
 /*login get*/
-// router.get('/login', checkNotLogin);
+router.get('/login', checkNotLogin);
 router.get('/login', function (req, res) {
-    res.render('login', {
+    return res.render('login', {
         title: '登录',
         user: req.session.user,
         success: req.flash('success').toString(),
         error: req.flash('error').toString()});
 });
 /*login post*/
-// router.post('/login', checkNotLogin);
+router.post('/login', checkNotLogin);
 router.post('/login', function (req, res) {
   //生成密码的 md5 值
   var md5 = crypto.createHash('md5'),
       password = md5.update(req.body.password).digest('hex');
+      console.log(req.body.username);
       console.log(password);
   //检查用户是否存在
   userDao.queryByName(req.body.username,function (err, user) {
-    console.log(req.body.username);
+    //
+    if(err){
+      console.log(err);
+      return res.send('<p>'+err+'</p>');;
+    }
     if (!user) {
       req.flash('error', '用户不存在!');
       return res.redirect('/login');//用户不存在则跳转到登录页
@@ -100,13 +112,13 @@ router.post('/login', function (req, res) {
     //用户名密码都匹配后，将用户信息存入 session
     req.session.user = user;
     req.flash('success', '登陆成功!');
-    res.redirect('/');//登陆成功后跳转到主页
+    return res.redirect('/');//登陆成功后跳转到主页
   });
 
 });
 
 
-// router.get('/reg', checkNotLogin);
+router.get('/reg', checkNotLogin);
 router.get('/reg', function (req, res) {
   res.render('reg', {
     title: '注册',
@@ -117,7 +129,7 @@ router.get('/reg', function (req, res) {
 });
 
 /*logout*/
-// router.post('/reg', checkNotLogin);
+router.post('/reg', checkNotLogin);
 router.post('/reg', function (req, res) {
   var name = req.body.username,
       password = req.body.password,
@@ -137,15 +149,16 @@ router.post('/reg', function (req, res) {
   });
 
   //检查用户名是否已经存在
-  userDao.queryByName(req.body.Phone_number, function (err, user) {
-    if (err) {
-      req.flash('error', err);
-      return res.redirect('/');
+  userDao.queryByName(req.body.username, function (err, user) {
+
+    if(err){
+      console.log(err);
+      return res.send('<p>'+err+'</p>');;
     }
 
     if (user) {
       req.flash('error', '用户已存在!');
-      return res.redirect('/reg');//返回注册页
+      return res.redirect('/reg');//返 回注册页
     }
 
     //如果不存在则新增用户
@@ -156,12 +169,30 @@ router.post('/reg', function (req, res) {
       }
       req.session.user = newUser;//用户信息存入 session
       req.flash('success', '注册成功!');
-      res.redirect('/');//注册成功后返回主页
+      return res.redirect('/');//注册成功后返回主页
     });
 
 
   });
 });
 
+
+
+//验证登录
+function checkLogin(req, res, next) {
+    if (!req.session.user) {
+      req.flash('error', '未登录!');
+      return res.redirect('/login');
+    }
+    next();
+  }
+//验证未登录
+  function checkNotLogin(req, res, next) {
+    if (req.session.user) {
+      req.flash('error', '已登录!');
+      return res.redirect('back');
+    }
+    next();
+  }
 
 module.exports = router;
