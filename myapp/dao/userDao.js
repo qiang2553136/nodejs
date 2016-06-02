@@ -11,6 +11,7 @@ function User(user) {
   this.name = user.name;
   this.password = user.password;
   this.phoneNumber = user.phoneNumber;
+  this.id = user.id;
 };
 
 
@@ -36,7 +37,7 @@ User.save =  function (user,callback) {
       connection.query($sql.insert, [user.name,user.phoneNumber,user.password], function(err, result) {
 
           if (err) {
-        
+
             return callback(err);//错误，返回 err 信息
           }
 
@@ -54,51 +55,62 @@ User.save =  function (user,callback) {
       });
     });
   };
-  // delete: function (req, res, next) {
-  //   // delete by Id
-  //   pool.getConnection(function(err, connection) {
-  //     var id = +req.query.id;
-  //     connection.query($sql.delete, id, function(err, result) {
-  //       if(result.affectedRows > 0) {
-  //         result = {
-  //           code: 200,
-  //           msg:'删除成功'
-  //         };
-  //       } else {
-  //         result = void 0;
-  //       }
-  //       jsonWrite(res, result);
-  //       connection.release();
-  //     });
-  //   });
-  // },
-  // update: function (req, res, next) {
-  //   // update by id
-  //   // 为了简单，要求同时传name和age两个参数
-  //   var param = req.body;
-  //   if(param.name == null || param.age == null || param.id == null) {
-  //     jsonWrite(res, undefined);
-  //     return;
-  //   }
-  //
-  //   pool.getConnection(function(err, connection) {
-  //     connection.query($sql.update, [param.name, param.age, +param.id], function(err, result) {
-  //       // 使用页面进行跳转提示
-  //       if(result.affectedRows > 0) {
-  //         res.render('suc', {
-  //           result: result
-  //         }); // 第二个参数可以直接在jade中使用
-  //       } else {
-  //         res.render('fail',  {
-  //           result: result
-  //         });
-  //       }
-  //
-  //       connection.release();
-  //     });
-  //   });
-  //
-  // },
+
+  User.delete = function (id,callback) {
+
+    pool.getConnection(function(err, connection) {
+
+      connection.query($sql.delete,id, function(err, result) {
+
+        if (err) {
+            return callback(err);//错误，返回 err 信息
+        }
+
+        if(result.affectedRows > 0) {
+          result = {
+            code: 200,
+            msg:'删除成功!'
+          };
+        } else {
+          result = {
+            code: 404,
+            msg:'未找到对应数据!'
+          };
+        }
+        //返回数据
+        callback(null, result);
+        // 释放连接
+        connection.release();
+      });
+    });
+  };
+  User.update = function (user,callback) {
+
+    console.log(user);
+    pool.getConnection(function(err, connection) {
+      connection.query($sql.update, [user.password,user.id], function(err, result) {
+
+        console.log(result);
+        // 使用页面进行跳转提示
+        if(result.affectedRows > 0) {
+          result = {
+            code: 200,
+            msg:'修改成功!'
+          };
+        } else {
+          result = {
+            code: 404,
+            msg:'未找到对应数据!'
+          };
+        }
+        //返回数据
+        callback(null, result);
+        // 释放连接
+        connection.release();
+      });
+    });
+
+  };
   User.queryByName = function (Phone_number, callback) {
      // 为了拼凑正确的sql语句，这里要转下整数
 
@@ -107,7 +119,6 @@ User.save =  function (user,callback) {
 
          return callback(err);//错误，返回 err 信息
        }
-
 
        connection.query($sql.queryById, Phone_number, function(err, result) {
          if (err) {

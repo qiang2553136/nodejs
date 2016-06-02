@@ -18,7 +18,7 @@ router.get('/logout', function (req, res) {
 });
 
 router.get('/', function(req, res, next) {
-
+  //查询所有数据 demo
   archiveDao.queryAll(res,function (err, archive) {
 
     if(err){
@@ -93,7 +93,7 @@ router.post('/login', function (req, res) {
       password = md5.update(req.body.password).digest('hex');
       console.log(req.body.username);
       console.log(password);
-  //检查用户是否存在
+  //查询单条数据 demo
   userDao.queryByName(req.body.username,function (err, user) {
     //
     if(err){
@@ -128,7 +128,7 @@ router.get('/reg', function (req, res) {
   });
 });
 
-/*logout*/
+//注册 demo
 router.post('/reg', checkNotLogin);
 router.post('/reg', function (req, res) {
   var name = req.body.username,
@@ -175,8 +175,76 @@ router.post('/reg', function (req, res) {
 
   });
 });
+//删除 demo
+router.get('/delete', checkLogin);
+router.get('/delete', function (req, res) {
 
+  userDao.delete(req.query.id,function(err,result){
 
+    if(err){
+      console.log(err);
+      return res.send('<p>'+err+'</p>');
+    }
+
+    req.flash('success', result.msg);
+    return res.redirect('/');//删除成功后返回主页
+    req.flash('success', res);
+
+  });
+});
+
+//更新 demo
+router.get('/update', checkLogin);
+router.get('/update', function (req, res) {
+    return res.render('update', {
+        title: '修改密码!',
+        user: req.session.user,
+        success: req.flash('success').toString(),
+        error: req.flash('error').toString()});
+});
+
+router.post('/update', checkLogin);
+router.post('/update', function (req, res) {
+
+    var oldpwd    = req.session.user.Password,
+      id          = req.session.user.Id,
+      password    = req.body.password,
+      password_re = req.body['password-repeat'];
+
+    //检验用户两次输入的密码是否一致
+    // if (password_re != password) {
+    //     req.flash('error', '两次输入新的密码不一致!');
+    //     return res.redirect('/update');//返回注册页
+    // }
+
+    var oldpassword = crypto.createHash('md5').update(req.body.oldpassword).digest('hex'),
+        password    = crypto.createHash('md5').update(password).digest('hex');
+
+    //旧密码有误
+    if(oldpwd!=oldpassword){
+      req.flash('error', '旧密码有误请重新输入!');
+      return res.redirect('/update');//返回修改页
+    }
+
+    var User = new userDao({
+        id: id,
+        password:password
+    });
+
+  userDao.update(User,function(err,result){
+
+    if(err){
+      console.log(err);
+      return res.send('<p>'+err+'</p>');
+    }
+
+    req.flash('success', result.msg);
+    return res.redirect('/');//修改成功后返回主页
+    req.flash('success', res);
+
+  });
+
+});
 
 //验证登录
 function checkLogin(req, res, next) {
